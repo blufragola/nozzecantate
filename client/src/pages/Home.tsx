@@ -17,10 +17,13 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
-  // Handle click on a moment in the timeline
+  // Handle click on a moment in the selections list
   const handleMomentClick = (moment: CeremonyMoment) => {
     setActiveMoment(moment);
     setIsModalOpen(true);
+    
+    // Set up a global handler that the SelectedSongsList can access
+    window.handleMomentSelect = handleMomentClick;
   };
 
   // Handle song selection from the modal
@@ -68,11 +71,7 @@ export default function Home() {
             view lyrics, and create a personalized music plan to share with your church choir.
           </p>
           
-          {/* Timeline visualization of ceremony moments - now clickable */}
-          <CeremonyTimeline 
-            selectedMoments={selectedMoments} 
-            onMomentClick={handleMomentClick}
-          />
+          {/* Timeline removed as requested */}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

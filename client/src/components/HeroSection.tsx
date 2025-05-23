@@ -12,10 +12,10 @@ export default function HeroSection() {
       <div className="container mx-auto px-4 h-full flex items-center justify-center relative z-10">
         <div className="text-center max-w-2xl">
           <h2 className="font-display text-white text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            Create Your Perfect Wedding Ceremony
+            Crea la giusta atmosfera per il tuo matrimonio
           </h2>
           <p className="text-white text-lg md:text-xl">
-            Select beautiful songs for each moment of your special day
+            Scegli i tuoi canti preferiti per ogni momento della tua cerimonia in chiesa
           </p>
         </div>
       </div>

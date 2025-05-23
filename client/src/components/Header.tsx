@@ -35,7 +35,7 @@ export default function Header({ onResetSelections }: HeaderProps) {
             />
           </svg>
           <h1 className="font-display text-2xl md:text-3xl font-bold text-primary">
-            Wedding Song Planner
+            Nozze Cantate
           </h1>
         </div>
         <div className="flex gap-4">
@@ -51,7 +51,7 @@ export default function Header({ onResetSelections }: HeaderProps) {
             className="px-4 py-2 text-sm border border-neutral-200 text-neutral-800 hover:bg-neutral-200"
             onClick={onResetSelections}
           >
-            Reset Selections
+            Resetta selezione
           </Button>
         </div>
       </div>

@@ -133,7 +133,7 @@ export default function SelectedSongsList({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
-      <h3 className="font-display text-xl font-semibold text-primary mb-6">Your Selections</h3>
+      <h3 className="font-display text-xl font-semibold text-primary mb-6">Scaletta</h3>
       
       {/* Selected Songs List */}
       <div id="selected-songs" className="mb-6">
@@ -149,15 +149,19 @@ export default function SelectedSongsList({
                   {`${ceremonyOrder.indexOf(moment) + 1}. ${capitalizeFirstLetter(moment)}`}
                 </h5>
                 <div 
-                  className={`text-xs px-2 py-1 rounded-full ${
+                  className={`text-xs px-2 py-1 rounded-full cursor-pointer hover:opacity-80 ${
                     selectedMoments && selectedMoments[moment] !== undefined
                       ? 'bg-green-100 text-green-700'
                       : 'bg-red-100 text-red-700'
                   }`}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent parent click event
+                    handleMomentClick(moment);
+                  }}
                 >
                   {selectedMoments && selectedMoments[moment] !== undefined
-                    ? 'Selected'
-                    : 'Click to select'}
+                    ? 'Cambia' /* Change */
+                    : 'Seleziona' /* Click to select */}
                 </div>
               </div>
               

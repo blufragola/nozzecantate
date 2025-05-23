@@ -79,7 +79,7 @@ export default function SongGallery({
   return (
     <div className={`bg-white ${!isModalMode ? 'rounded-lg shadow-md p-6' : ''}`}>
       {!isModalMode && (
-        <h3 className="font-display text-xl font-semibold text-primary mb-6">Song Selection</h3>
+        <h3 className="font-display text-xl font-semibold text-primary mb-6">Canti</h3>
       )}
       
       {/* Filter Controls - don't show in modal mode if filtering a specific moment */}
@@ -98,7 +98,7 @@ export default function SongGallery({
                 }`}
                 onClick={() => setCurrentFilter(moment)}
               >
-                {moment === 'all' ? 'All Songs' : capitalizeFirstLetter(moment)}
+                {moment === 'all' ? 'Tutti' : capitalizeFirstLetter(moment)}
               </Button>
             ))}
           </div>
