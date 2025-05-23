@@ -59,7 +59,13 @@ export class MemStorage implements IStorage {
   // Submission operations
   async createSubmission(insertSubmission: InsertSubmission): Promise<Submission> {
     const id = this.submissionIdCounter++;
-    const submission: Submission = { id, ...insertSubmission };
+    // Add createdAt field if it doesn't exist
+    const submission: Submission = { 
+      id, 
+      ...insertSubmission,
+      createdAt: insertSubmission.createdAt || new Date().toISOString(),
+      notes: insertSubmission.notes || ""
+    };
     this.submissions.set(id, submission);
     return submission;
   }

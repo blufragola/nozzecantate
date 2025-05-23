@@ -63,7 +63,7 @@ export default function SongCard({
     : song.suitableMoments;
 
   // Check if this song is specifically highlighted for a moment
-  const isHighlighted = highlightMoment && song.suitableMoments.includes(highlightMoment);
+  const isHighlighted = highlightMoment ? song.suitableMoments.includes(highlightMoment) : false;
 
   return (
     <div 
@@ -137,7 +137,7 @@ export default function SongCard({
               const typedMoment = moment as CeremonyMoment;
               const isSelected = selectedMoments && selectedMoments[typedMoment] === song.id;
               const isMomentFilled = selectedMoments && selectedMoments[typedMoment] !== undefined;
-              const isDisabled = isSongSelected && !isSelected;
+              const isDisabled = (isSongSelected && !isSelected) ? true : false;
 
               return (
                 <Button
@@ -152,7 +152,7 @@ export default function SongCard({
                         : 'bg-white text-accent-green border-accent-green'
                   } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}
                   onClick={() => !isDisabled && onSelectMoment(song.id, typedMoment)}
-                  disabled={isDisabled || (isMomentFilled && !isSelected)}
+                  disabled={isDisabled || (isMomentFilled && !isSelected) ? true : false}
                 >
                   {highlightMoment ? 'Select' : `For ${capitalizeFirstLetter(moment)}`}
                 </Button>
