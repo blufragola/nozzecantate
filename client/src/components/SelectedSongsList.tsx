@@ -125,9 +125,12 @@ export default function SelectedSongsList({
 
   // Function to handle clicking on a moment in the list
   const handleMomentClick = (moment: CeremonyMoment) => {
-    // If a callback exists on the parent to handle clicks, call it
-    if (window.handleMomentSelect) {
+    console.log("Moment clicked:", moment);
+    // Try to open modal directly using Home component's handler through the window object
+    if (typeof window.handleMomentSelect === 'function') {
       window.handleMomentSelect(moment);
+    } else {
+      console.error("handleMomentSelect function not available on window object");
     }
   };
 

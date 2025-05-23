@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
@@ -21,10 +21,18 @@ export default function Home() {
   const handleMomentClick = (moment: CeremonyMoment) => {
     setActiveMoment(moment);
     setIsModalOpen(true);
-    
-    // Set up a global handler that the SelectedSongsList can access
-    window.handleMomentSelect = handleMomentClick;
   };
+  
+  // Make the function available globally so SelectedSongsList can access it
+  useEffect(() => {
+    // Make the function globally accessible
+    window.handleMomentSelect = handleMomentClick;
+    
+    return () => {
+      // Clean up when component unmounts
+      window.handleMomentSelect = undefined;
+    };
+  }, [handleMomentClick]);
 
   // Handle song selection from the modal
   const handleSelectForMoment = (songId: number, moment: CeremonyMoment) => {
