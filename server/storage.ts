@@ -92,6 +92,20 @@ export class MemStorage implements IStorage {
         suitableMoments: ["ingresso", "inizio"] as CeremonyMoment[]
       },
       {
+        title: "Vieni Spirito d'Amore",
+        description: "An invocational hymn calling upon the Holy Spirit, ideal for the beginning of the ceremony.",
+        lyrics: "Vieni Spirito d'amore,\nManda a noi dal cielo\nUn raggio della tua luce.\n\nVieni padre dei poveri,\nVieni datore dei doni,\nVieni luce dei cuori.\n\nConsolatore perfetto,\nOspite dolce dell'anima,\nDolcissimo sollievo.",
+        audioUrl: "https://upload.wikimedia.org/wikipedia/commons/8/8b/Mendelssohn_-_Spring_Song.ogg",
+        suitableMoments: ["inizio"] as CeremonyMoment[]
+      },
+      {
+        title: "Invitato alla Festa",
+        description: "A welcoming song inviting guests to participate in the celebration of love.",
+        lyrics: "Invitato alla festa di nozze,\nSei venuto, Signore, tra noi,\nCome un giorno a Cana di Galilea.\n\nE ti doni ancora a chi ti cerca,\nCome vino che allieta ogni cuore,\nCome amore che unisce due vite.",
+        audioUrl: "https://upload.wikimedia.org/wikipedia/commons/f/f1/Grieg_-_Wedding_Day_at_Troldhaugen.ogg",
+        suitableMoments: ["inizio"] as CeremonyMoment[]
+      },
+      {
         title: "Alleluia Pasquale",
         description: "A joyous Alleluia hymn traditionally sung before the Gospel reading.",
         lyrics: "Alleluia, alleluia, alleluia!\nAlleluia, alleluia, alleluia!\n\nResurrection day arrived\nCelebrate and raise your voices high\nLet the good news echo all around\nJesus Christ is risen from the tomb\n\nAlleluia, alleluia, alleluia!\nAlleluia, alleluia, alleluia!",

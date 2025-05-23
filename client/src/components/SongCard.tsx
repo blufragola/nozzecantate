@@ -133,8 +133,10 @@ export default function SongCard({
           </button>
           <div className="flex gap-2">
             {momentsToDisplay.map((moment) => {
-              const isSelected = selectedMoments && selectedMoments[moment] === song.id;
-              const isMomentFilled = selectedMoments && selectedMoments[moment] !== undefined;
+              // Safely cast moment to CeremonyMoment to avoid type issues
+              const typedMoment = moment as CeremonyMoment;
+              const isSelected = selectedMoments && selectedMoments[typedMoment] === song.id;
+              const isMomentFilled = selectedMoments && selectedMoments[typedMoment] !== undefined;
               const isDisabled = isSongSelected && !isSelected;
 
               return (
@@ -145,11 +147,11 @@ export default function SongCard({
                   className={`px-3 py-1 text-xs rounded ${
                     isSelected 
                       ? 'bg-accent-green text-white' 
-                      : highlightMoment === moment
+                      : highlightMoment === typedMoment
                         ? 'bg-primary bg-opacity-10 text-primary border-primary'
                         : 'bg-white text-accent-green border-accent-green'
                   } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}
-                  onClick={() => !isDisabled && onSelectMoment(song.id, moment)}
+                  onClick={() => !isDisabled && onSelectMoment(song.id, typedMoment)}
                   disabled={isDisabled || (isMomentFilled && !isSelected)}
                 >
                   {highlightMoment ? 'Select' : `For ${capitalizeFirstLetter(moment)}`}
