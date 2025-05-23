@@ -197,7 +197,7 @@ export default function SelectedSongsList({
       <div className="mb-6">
         <Progress value={completion} className="w-full h-2.5 bg-neutral-200 mb-2" />
         <p className="text-sm text-neutral-600 mb-4">
-          {`${isComplete ? 'All' : Math.round(completion / (100 / ceremonyOrder.length))}/${ceremonyOrder.length} selections made`}
+          {`${isComplete ? 'Tutti' : Math.round(completion / (100 / ceremonyOrder.length))}/${ceremonyOrder.length} canti selezionati`}
         </p>
         <div className="flex flex-wrap gap-3">
           <Button

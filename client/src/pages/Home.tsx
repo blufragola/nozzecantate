@@ -113,7 +113,7 @@ export default function Home() {
         <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Select a Song for {activeMoment && capitalizeFirstLetter(activeMoment)}
+              Seleziona un canto per {activeMoment && capitalizeFirstLetter(activeMoment)}
             </DialogTitle>
           </DialogHeader>
           
