@@ -98,6 +98,7 @@ export default function Home() {
               selectedMoments={selectedMoments}
               onRemoveSong={removeSongFromMoment}
               onIncompleteSubmit={handleIncompleteSubmit}
+              onMomentClick={handleMomentClick}
             />
           </div>
         </div>

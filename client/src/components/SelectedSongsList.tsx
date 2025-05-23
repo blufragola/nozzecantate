@@ -11,12 +11,14 @@ interface SelectedSongsListProps {
   selectedMoments: { [key in CeremonyMoment]?: number } | null;
   onRemoveSong: (moment: CeremonyMoment) => void;
   onIncompleteSubmit?: (callback: () => void) => void;
+  onMomentClick?: (moment: CeremonyMoment) => void;
 }
 
 export default function SelectedSongsList({ 
   selectedMoments, 
   onRemoveSong,
-  onIncompleteSubmit 
+  onIncompleteSubmit,
+  onMomentClick
 }: SelectedSongsListProps) {
   const { toast } = useToast();
 
@@ -125,12 +127,9 @@ export default function SelectedSongsList({
 
   // Function to handle clicking on a moment in the list
   const handleMomentClick = (moment: CeremonyMoment) => {
-    console.log("Moment clicked:", moment);
-    // Try to open modal directly using Home component's handler through the window object
-    if (typeof window.handleMomentSelect === 'function') {
-      window.handleMomentSelect(moment);
-    } else {
-      console.error("handleMomentSelect function not available on window object");
+    console.log("Moment clicked in SelectedSongsList:", moment);
+    if (onMomentClick) {
+      onMomentClick(moment);
     }
   };
 
