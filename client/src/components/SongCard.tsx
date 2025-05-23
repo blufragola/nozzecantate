@@ -9,6 +9,7 @@ interface SongCardProps {
   onViewLyrics: (song: Song) => void;
   onSelectMoment: (songId: number, moment: CeremonyMoment) => void;
   selectedMoments: { [key in CeremonyMoment]?: number } | null;
+  highlightMoment?: CeremonyMoment;
 }
 
 export default function SongCard({
@@ -17,6 +18,7 @@ export default function SongCard({
   onViewLyrics,
   onSelectMoment,
   selectedMoments,
+  highlightMoment,
 }: SongCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const soundRef = useRef<Howl | null>(null);
@@ -55,10 +57,23 @@ export default function SongCard({
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
+  // Filter moments to display. If highlightMoment is set, only show that moment
+  const momentsToDisplay = highlightMoment 
+    ? song.suitableMoments.filter(moment => moment === highlightMoment)
+    : song.suitableMoments;
+
+  // Check if this song is specifically highlighted for a moment
+  const isHighlighted = highlightMoment && song.suitableMoments.includes(highlightMoment);
+
   return (
     <div 
-      className={`song-card bg-white border ${isSongSelected ? 'border-primary' : 'border-neutral-200'} 
-        rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow`}
+      className={`song-card bg-white border ${
+        isHighlighted 
+          ? 'border-primary border-2' 
+          : isSongSelected 
+            ? 'border-primary'
+            : 'border-neutral-200'
+      } rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow`}
       data-song-id={song.id}
       data-moments={song.suitableMoments.join(",")}
     >
@@ -69,7 +84,11 @@ export default function SongCard({
             {song.suitableMoments.map((moment) => (
               <span 
                 key={moment} 
-                className="px-2 py-1 bg-primary-light bg-opacity-20 text-primary text-xs rounded-full"
+                className={`px-2 py-1 text-xs rounded-full ${
+                  highlightMoment && moment === highlightMoment
+                    ? 'bg-primary text-white'
+                    : 'bg-primary-light bg-opacity-20 text-primary'
+                }`}
               >
                 {capitalizeFirstLetter(moment)}
               </span>
@@ -113,7 +132,7 @@ export default function SongCard({
             View Lyrics
           </button>
           <div className="flex gap-2">
-            {song.suitableMoments.map((moment) => {
+            {momentsToDisplay.map((moment) => {
               const isSelected = selectedMoments && selectedMoments[moment] === song.id;
               const isMomentFilled = selectedMoments && selectedMoments[moment] !== undefined;
               const isDisabled = isSongSelected && !isSelected;
@@ -126,12 +145,14 @@ export default function SongCard({
                   className={`px-3 py-1 text-xs rounded ${
                     isSelected 
                       ? 'bg-accent-green text-white' 
-                      : 'bg-white text-accent-green border-accent-green'
+                      : highlightMoment === moment
+                        ? 'bg-primary bg-opacity-10 text-primary border-primary'
+                        : 'bg-white text-accent-green border-accent-green'
                   } ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'}`}
                   onClick={() => !isDisabled && onSelectMoment(song.id, moment)}
                   disabled={isDisabled || (isMomentFilled && !isSelected)}
                 >
-                  For {capitalizeFirstLetter(moment)}
+                  {highlightMoment ? 'Select' : `For ${capitalizeFirstLetter(moment)}`}
                 </Button>
               );
             })}

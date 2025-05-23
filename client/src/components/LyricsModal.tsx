@@ -1,6 +1,6 @@
 import { Song } from "@shared/schema";
 import { Button } from "@/components/ui/button";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, Fragment } from "react";
 import { Howl } from "howler";
 
 interface LyricsModalProps {
@@ -104,10 +104,10 @@ export default function LyricsModal({ song, isOpen, onClose }: LyricsModalProps)
               <h4 className="text-sm font-medium text-neutral-500 mb-2">Lyrics:</h4>
               <div className="prose max-w-none text-neutral-800 overflow-y-auto max-h-96">
                 {song.lyrics.split('\n').map((line, index) => (
-                  <React.Fragment key={index}>
+                  <Fragment key={index}>
                     {line}
                     <br />
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </div>
             </div>

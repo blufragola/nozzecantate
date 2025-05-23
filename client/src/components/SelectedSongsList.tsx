@@ -10,11 +10,13 @@ import { generatePdf } from "@/lib/pdf-generator";
 interface SelectedSongsListProps {
   selectedMoments: { [key in CeremonyMoment]?: number } | null;
   onRemoveSong: (moment: CeremonyMoment) => void;
+  onIncompleteSubmit?: (callback: () => void) => void;
 }
 
 export default function SelectedSongsList({ 
   selectedMoments, 
-  onRemoveSong 
+  onRemoveSong,
+  onIncompleteSubmit 
 }: SelectedSongsListProps) {
   const { toast } = useToast();
 
@@ -50,67 +52,83 @@ export default function SelectedSongsList({
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  // Handle download PDF
+  // Handle download PDF with possible incomplete selections
   const handleDownloadPdf = async () => {
-    if (!isComplete || !selectedMoments) {
-      toast({
-        title: "Cannot download PDF",
-        description: "Please select songs for all ceremony moments first.",
-        variant: "destructive"
-      });
-      return;
-    }
+    const downloadAction = async () => {
+      try {
+        if (!selectedMoments) return;
+        
+        // Get the full song details for each selection
+        const selectedSongs = ceremonyOrder.map(moment => {
+          const songId = selectedMoments[moment];
+          return {
+            moment,
+            song: getSongById(songId)
+          };
+        }).filter(item => item.song !== null);  // Only include selections that have songs
 
-    try {
-      // Get the full song details for each selection
-      const selectedSongs = ceremonyOrder.map(moment => {
-        const songId = selectedMoments[moment];
-        return {
-          moment,
-          song: getSongById(songId)
-        };
-      });
+        // Generate and download the PDF
+        await generatePdf(selectedSongs);
+        
+        toast({
+          title: "PDF Downloaded",
+          description: "Your song lyrics PDF has been downloaded successfully.",
+        });
+      } catch (error) {
+        console.error('Error generating PDF:', error);
+        toast({
+          title: "Error",
+          description: "Could not generate PDF. Please try again.",
+          variant: "destructive"
+        });
+      }
+    };
 
-      // Generate and download the PDF
-      await generatePdf(selectedSongs);
-      
-      toast({
-        title: "PDF Downloaded",
-        description: "Your song lyrics PDF has been downloaded successfully.",
-      });
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-      toast({
-        title: "Error",
-        description: "Could not generate PDF. Please try again.",
-        variant: "destructive"
-      });
+    if (isComplete || !onIncompleteSubmit) {
+      // If complete or no confirmation function provided, just download
+      downloadAction();
+    } else {
+      // Otherwise use the confirmation function
+      onIncompleteSubmit(downloadAction);
     }
   };
 
-  // Handle WhatsApp sharing
+  // Handle WhatsApp sharing with possible incomplete selections
   const handleShareWhatsApp = () => {
-    if (!isComplete || !selectedMoments) {
-      toast({
-        title: "Cannot share",
-        description: "Please select songs for all ceremony moments first.",
-        variant: "destructive"
-      });
-      return;
+    const shareAction = () => {
+      if (!selectedMoments) return;
+
+      // Create a message with the selected songs
+      const songSelections = ceremonyOrder
+        .filter(moment => selectedMoments[moment] !== undefined)
+        .map(moment => {
+          const songId = selectedMoments[moment];
+          const song = getSongById(songId);
+          return `${capitalizeFirstLetter(moment)}: ${song?.title}`;
+        }).join('\n');
+
+      const message = `My Wedding Ceremony Song Selections:\n\n${songSelections}`;
+      const encodedMessage = encodeURIComponent(message);
+      
+      // Open WhatsApp with the pre-filled message
+      window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+    };
+
+    if (isComplete || !onIncompleteSubmit) {
+      // If complete or no confirmation function provided, just share
+      shareAction();
+    } else {
+      // Otherwise use the confirmation function
+      onIncompleteSubmit(shareAction);
     }
+  };
 
-    // Create a message with the selected songs
-    const songSelections = ceremonyOrder.map(moment => {
-      const songId = selectedMoments[moment];
-      const song = getSongById(songId);
-      return `${capitalizeFirstLetter(moment)}: ${song?.title}`;
-    }).join('\n');
-
-    const message = `My Wedding Ceremony Song Selections:\n\n${songSelections}`;
-    const encodedMessage = encodeURIComponent(message);
-    
-    // Open WhatsApp with the pre-filled message
-    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+  // Function to handle clicking on a moment in the list
+  const handleMomentClick = (moment: CeremonyMoment) => {
+    // If a callback exists on the parent to handle clicks, call it
+    if (window.handleMomentSelect) {
+      window.handleMomentSelect(moment);
+    }
   };
 
   return (
@@ -121,7 +139,11 @@ export default function SelectedSongsList({
       <div id="selected-songs" className="mb-6">
         <div className="flex flex-col gap-3">
           {ceremonyOrder.map((moment) => (
-            <div key={moment} className="ceremony-moment-container border border-neutral-200 rounded-lg p-3">
+            <div 
+              key={moment} 
+              className="ceremony-moment-container border border-neutral-200 rounded-lg p-3 hover:border-primary transition-colors cursor-pointer"
+              onClick={() => handleMomentClick(moment)}
+            >
               <div className="flex items-center justify-between mb-2">
                 <h5 className="font-display font-medium text-neutral-800">
                   {`${ceremonyOrder.indexOf(moment) + 1}. ${capitalizeFirstLetter(moment)}`}
@@ -135,7 +157,7 @@ export default function SelectedSongsList({
                 >
                   {selectedMoments && selectedMoments[moment] !== undefined
                     ? 'Selected'
-                    : 'Not selected'}
+                    : 'Click to select'}
                 </div>
               </div>
               
@@ -147,7 +169,10 @@ export default function SelectedSongsList({
                     </span>
                     <button 
                       className="remove-song-btn text-red-600 hover:text-red-800"
-                      onClick={() => onRemoveSong(moment)}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent triggering parent click
+                        onRemoveSong(moment);
+                      }}
                       aria-label={`Remove song from ${moment}`}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -172,7 +197,6 @@ export default function SelectedSongsList({
           <Button
             className="flex-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
             onClick={handleDownloadPdf}
-            disabled={!isComplete}
           >
             <div className="flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -184,7 +208,6 @@ export default function SelectedSongsList({
           <Button
             className="flex-1 px-4 py-2 bg-[#25D366] text-white rounded-lg hover:bg-opacity-90 transition-colors"
             onClick={handleShareWhatsApp}
-            disabled={!isComplete}
           >
             <div className="flex items-center justify-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -197,7 +220,19 @@ export default function SelectedSongsList({
       </div>
       
       {/* Contact Choir Form */}
-      <ShareOptionsForm selectedSongs={selectedMoments} songsData={songs} isComplete={isComplete} />
+      <ShareOptionsForm 
+        selectedSongs={selectedMoments} 
+        songsData={songs} 
+        isComplete={isComplete} 
+        onIncompleteSubmit={onIncompleteSubmit}
+      />
     </div>
   );
+}
+
+// Add a property to the window object to allow communication between components
+declare global {
+  interface Window {
+    handleMomentSelect?: (moment: CeremonyMoment) => void;
+  }
 }

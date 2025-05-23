@@ -20,12 +20,14 @@ interface ShareOptionsFormProps {
   selectedSongs: { [key in CeremonyMoment]?: number } | null;
   songsData: Song[];
   isComplete: boolean;
+  onIncompleteSubmit?: (callback: () => void) => void;
 }
 
 export default function ShareOptionsForm({ 
   selectedSongs, 
   songsData, 
-  isComplete 
+  isComplete,
+  onIncompleteSubmit
 }: ShareOptionsFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
@@ -41,47 +43,57 @@ export default function ShareOptionsForm({
   });
 
   const onSubmit = async (data: FormData) => {
-    if (!isComplete || !selectedSongs) {
+    if (!selectedSongs || Object.keys(selectedSongs).length === 0) {
       toast({
         title: "Cannot submit",
-        description: "Please select songs for all ceremony moments first.",
+        description: "Please select at least one song for your ceremony.",
         variant: "destructive"
       });
       return;
     }
 
-    setIsSubmitting(true);
+    const submitAction = async () => {
+      setIsSubmitting(true);
 
-    try {
-      // Transform the selected songs to include song details
-      const songSelections = Object.entries(selectedSongs).map(([moment, songId]) => {
-        const song = songsData.find(s => s.id === songId);
-        return {
-          moment,
-          songId,
-          songTitle: song?.title || 'Unknown Song'
-        };
-      });
+      try {
+        // Transform the selected songs to include song details
+        const songSelections = Object.entries(selectedSongs).map(([moment, songId]) => {
+          const song = songsData.find(s => s.id === songId);
+          return {
+            moment,
+            songId,
+            songTitle: song?.title || 'Unknown Song'
+          };
+        });
 
-      // Submit the form data and selections to the API
-      await apiRequest('POST', '/api/submit-selections', {
-        ...data,
-        songSelections
-      });
+        // Submit the form data and selections to the API
+        await apiRequest('POST', '/api/submit-selections', {
+          ...data,
+          songSelections
+        });
 
-      toast({
-        title: "Submission Successful",
-        description: "Your song selections have been sent to the choir.",
-      });
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      toast({
-        title: "Submission Failed",
-        description: "There was an error sending your selections. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSubmitting(false);
+        toast({
+          title: "Submission Successful",
+          description: "Your song selections have been sent to the choir.",
+        });
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        toast({
+          title: "Submission Failed",
+          description: "There was an error sending your selections. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    };
+
+    // If it's complete or no confirmation function is provided, just submit
+    if (isComplete || !onIncompleteSubmit) {
+      submitAction();
+    } else {
+      // Otherwise use the confirmation function
+      onIncompleteSubmit(submitAction);
     }
   };
 
@@ -173,7 +185,7 @@ export default function ShareOptionsForm({
         <Button
           type="submit"
           className="w-full px-4 py-2 bg-accent-gold text-white rounded-lg hover:bg-opacity-90 transition-colors"
-          disabled={!isComplete || isSubmitting}
+          disabled={!selectedSongs || Object.keys(selectedSongs).length === 0 || isSubmitting}
         >
           {isSubmitting ? (
             <div className="flex items-center">
